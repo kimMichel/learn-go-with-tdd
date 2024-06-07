@@ -19,3 +19,7 @@ func (c Circle) Area() float64 {
 
 	return math.Pi * c.Radius * c.Radius
 }
+
+type Form interface {
+	Area() float64
+}
