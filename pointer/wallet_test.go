@@ -32,4 +32,16 @@ func TestWallet(t *testing.T) {
 
 		confirmBalance(t, wallet, expected)
 	})
+
+	t.Run("Withdraw with not enought balance", func(t *testing.T) {
+		initialBalance := Bitcoin(20)
+		wallet := Wallet{initialBalance}
+		err := wallet.Withdraw(100)
+
+		confirmBalance(t, wallet, initialBalance)
+
+		if err == nil {
+			t.Error("Expected an error..")
+		}
+	})
 }

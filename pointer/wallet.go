@@ -1,6 +1,9 @@
 package pointer
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type Bitcoin int
 
@@ -19,8 +22,13 @@ func (w *Wallet) Balance() Bitcoin {
 	return w.balance
 }
 
-func (w *Wallet) Withdraw(quantity Bitcoin) {
+func (w *Wallet) Withdraw(quantity Bitcoin) error {
+	if quantity > w.balance {
+		return errors.New("ouch")
+	}
+
 	w.balance -= quantity
+	return nil
 }
  
 type Stringer interface {
