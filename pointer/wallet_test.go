@@ -5,14 +5,6 @@ import (
 )
 
 func TestWallet(t *testing.T) {
-	confirmBalance := func(t *testing.T, wallet Wallet, expected Bitcoin) {
-		t.Helper()
-		result := wallet.Balance()
-
-		if result != expected {
-			t.Errorf("expected: %s, result: %s", expected, result)
-		}
-	}
 	t.Run("Deposit", func(t *testing.T) {
 		wallet := Wallet{}
 
@@ -39,9 +31,26 @@ func TestWallet(t *testing.T) {
 		err := wallet.Withdraw(100)
 
 		confirmBalance(t, wallet, initialBalance)
-
-		if err == nil {
-			t.Error("Expected an error..")
-		}
+		confirmError(t, err, ErrorNotEnoughBalance)
 	})
+}
+
+func confirmBalance(t *testing.T, wallet Wallet, expected Bitcoin) {
+	t.Helper()
+	result := wallet.Balance()
+
+	if result != expected {
+		t.Errorf("expected: %s, result: %s", expected, result)
+	}
+}
+
+func confirmError(t *testing.T, result error, expected error)  {
+	t.Helper()
+	if result == nil {
+		t.Fatal("Expected an error..")
+	}
+
+	if result != expected {
+		t.Errorf("expected: %s, result: %s", expected, result)
+	}
 }
