@@ -1,6 +1,8 @@
 package maps
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestFind(t *testing.T) {
 	dictionary := Dictionary{"test": "this is just a test"}
@@ -20,19 +22,25 @@ func TestFind(t *testing.T) {
 }
 
 func TestAdd(t *testing.T) {
-	dictionary := Dictionary{}
-	dictionary.Add("test", "this is just a test")
+	t.Run("new word", func(t *testing.T) {
+		dictionary := Dictionary{}
+		word := "test"
+		definition := "this is just a test"
 
-	expect := "this is just a test"
-	result, err := dictionary.Find("test")
+		dictionary.Add(word, definition)
 
-	if err != nil {
-		t.Fatal("not was possible to find the added word:", err)
-	}
+		compareDefinition(t, dictionary, word, definition)
+	})
 
-	if expect != result {
-		t.Errorf("expected: %s, result: %s", expect, result)
-	}
+	t.Run("existent word", func(t *testing.T) {
+		word := "test"
+		definition := "this is just a test"
+		dictionary := Dictionary{word: definition}
+		err := dictionary.Add(word, "new test")
+
+		compareError(t, err, ErrExistentWord)
+		compareDefinition(t, dictionary, word, definition)
+	})
 }
 
 func compareError(t *testing.T, result, expect error) {
@@ -40,5 +48,18 @@ func compareError(t *testing.T, result, expect error) {
 
 	if result != expect {
 		t.Errorf("expected: %s, error result: %s", expect, result)
+	}
+}
+
+func compareDefinition(t *testing.T, dictionary Dictionary, word, definition string) {
+	t.Helper()
+
+	result, err := dictionary.Find(word)
+	if err != nil {
+		t.Fatal("supposed to find the added word:", err)
+	}
+	
+	if definition != result {
+		t.Errorf("expected: %s, result: %s", definition, result)
 	}
 }
