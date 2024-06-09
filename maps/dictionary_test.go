@@ -19,6 +19,22 @@ func TestFind(t *testing.T) {
 	})
 }
 
+func TestAdd(t *testing.T) {
+	dictionary := Dictionary{}
+	dictionary.Add("test", "this is just a test")
+
+	expect := "this is just a test"
+	result, err := dictionary.Find("test")
+
+	if err != nil {
+		t.Fatal("not was possible to find the added word:", err)
+	}
+
+	if expect != result {
+		t.Errorf("expected: %s, result: %s", expect, result)
+	}
+}
+
 func compareError(t *testing.T, result, expect error) {
 	t.Helper()
 
