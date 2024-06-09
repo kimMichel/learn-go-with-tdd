@@ -43,6 +43,41 @@ func TestAdd(t *testing.T) {
 	})
 }
 
+func TestUpdate(t *testing.T) {
+	t.Run("existent word", func(t *testing.T) {
+		word := "test"
+		definition := "its just a test"
+		dictionary := Dictionary{word: definition}
+		newDefinition := "new definition"
+
+		dictionary.Update(word, newDefinition)
+
+		compareDefinition(t, dictionary, word, newDefinition)
+	})
+
+	t.Run("not existent word", func(t *testing.T) {
+		word := "test"
+		definition := "its just a test"
+		dictionary := Dictionary{}
+
+		err := dictionary.Update(word, definition)
+
+		compareError(t, err, ErrUnexistentWord)
+	})
+}
+
+func TestDelete(t *testing.T) {
+	word := "test"
+	dictionary := Dictionary{word: "definition of test"}
+
+	dictionary.Delete(word)
+
+	_, err := dictionary.Find(word)
+	if err != ErrNotFound {
+		t.Errorf("expected %s was deleted", word)
+	}
+}
+
 func compareError(t *testing.T, result, expect error) {
 	t.Helper()
 
