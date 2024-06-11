@@ -6,24 +6,37 @@ import (
 	"testing"
 	"time"
 )
-
 func TestRunner(t *testing.T) {
 	
-	slowerServer := createServerWithDelay(20 * time.Millisecond)
-	fastServer := createServerWithDelay(0)
+	t.Run("test which url is more faster", func(t *testing.T) {
+		slowerServer := createServerWithDelay(20 * time.Millisecond)
+		fastServer := createServerWithDelay(0)
 
-	SlowUrl := slowerServer.URL
-	FastUrl := fastServer.URL
+		SlowUrl := slowerServer.URL
+		FastUrl := fastServer.URL
 
-	expect := FastUrl
-	result := Runner(SlowUrl, FastUrl)
+		expect := FastUrl
+		result, _ := Runner(SlowUrl, FastUrl)
 
-	if result != expect {
-		t.Errorf("expect: %s, result: %s", expect, result)
-	}
+		if result != expect {
+			t.Errorf("expect: %s, result: %s", expect, result)
+		}
 
-	slowerServer.Close()
-	fastServer.Close()
+		slowerServer.Close()
+		fastServer.Close()
+	})
+
+	t.Run("return an error if the server not return a response in 10s", func(t *testing.T) {
+		server := createServerWithDelay(25 * time.Millisecond)
+
+		defer server.Close()
+
+		_, err := Configurable(server.URL, server.URL, 20 * time.Millisecond)
+
+		if err == nil {
+			t.Error("expect an error, but does not have")
+		}
+	})
 }
 
 func createServerWithDelay(delay time.Duration) *httptest.Server {
